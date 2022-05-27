@@ -4,6 +4,8 @@ import 'dart:typed_data';
 import './apdu.dart';
 import './constants.dart';
 
+/// Base class that defines APDU commands used by CelikAPI
+/// One may override transmit method with a custom imiplementation
 abstract class CelikAPDUBase {
   static const int defaultFileOffset = 4;
   dynamic selectedFileLength;
