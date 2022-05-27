@@ -1,5 +1,10 @@
 # Change Log
 
+### version: 1.0.1+1
+
+- Minor comments fixes
+- Exporting CelikApiAllData class
+
 ### version: 1.0.1
 
 - Added `CelikApi.disconnectCard()`

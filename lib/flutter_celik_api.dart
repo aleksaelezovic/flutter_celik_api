@@ -7,7 +7,7 @@ import './src/constants.dart';
 import './src/celik_api.dart';
 
 export './src/constants.dart' show CelikFile, CelikTag;
-export './src/celik_api.dart' show CelikAPDUBase, CelikDataAPI;
+export './src/celik_api.dart' show CelikAPDUBase, CelikDataAPI, CelikAPIAllData;
 
 /// CelikAPDUBase, based on flutter_pcsc
 class CelikAPDU extends CelikAPDUBase {
@@ -19,11 +19,13 @@ class CelikAPDU extends CelikAPDUBase {
       Pcsc.transmit(card, bytes, newIsolate: true);
 }
 
-/// Main user-friendly class
-/// Implementation of CelikDataAPI
-/// Communication with card-reader is done through flutter_pcsc package
+/// Main user-friendly class.
+/// * Implementation of CelikDataAPI.
+/// * Communication with card-reader is done through flutter_pcsc package.
 ///
-/// Simple usage: await CelikAPI().readAllData()
+/// Simple usage: ```
+/// await CelikAPI().readAllData()
+/// ```
 class CelikAPI extends CelikDataAPI {
   /// flutter_pcsc Context
   int? ctx;
@@ -50,7 +52,8 @@ class CelikAPI extends CelikDataAPI {
   }
 
   /// Called to initialize the PCSC Context. Initiates the connection to a card
-  /// Must be called before any other methods
+  ///
+  /// * Must be called before any other methods
   Future<void> start() async {
     await end();
 
@@ -60,7 +63,7 @@ class CelikAPI extends CelikDataAPI {
 
   /// Get list of all readers
   ///
-  /// Throws if start() was not called before
+  /// * Throws if start() was not called before
   Future<List<String>> getReaders() async {
     checkInit();
 
@@ -69,7 +72,7 @@ class CelikAPI extends CelikDataAPI {
 
   /// Connect a card inserted in a specific reader
   ///
-  /// Throws if start() was not called before
+  /// * Throws if start() was not called before
   Future<void> connectCard(String reader) async {
     checkInit();
 
@@ -83,8 +86,8 @@ class CelikAPI extends CelikDataAPI {
 
   /// Reads data from specified File on card
   ///
-  /// Throws if start() was not called before
-  /// Throws if connectCard() was not called
+  /// * Throws if start() was not called before
+  /// * Throws if connectCard() was not called
   @override
   Future<Map<CelikTag, String>> readData(CelikFile file) {
     checkInit();
@@ -95,8 +98,8 @@ class CelikAPI extends CelikDataAPI {
 
   /// Reads image data.
   ///
-  /// Throws if start() was not called before
-  /// Throws if connectCard() was not called
+  /// * Throws if start() was not called before
+  /// * Throws if connectCard() was not called
   @override
   Future<String> readImageData() {
     checkInit();
@@ -106,8 +109,8 @@ class CelikAPI extends CelikDataAPI {
   }
 
   /// Automatically reads all data on card
-  /// Maximally user friendly
-  /// start() or end() does not have to be called
+  ///
+  /// start() or end() does not have to be called!
   ///
   /// Returns always, no error throwing (Prints errors in kDebugMode)
   @override
@@ -138,8 +141,8 @@ class CelikAPI extends CelikDataAPI {
 
   /// Disconnect a connected card
   ///
-  /// Throws if start() was not called before
-  /// Throws if connectCard() was not called
+  /// * Throws if start() was not called before
+  /// * Throws if connectCard() was not called
   Future<void> disconnectCard() async {
     checkInit();
     checkCard();
@@ -149,6 +152,7 @@ class CelikAPI extends CelikDataAPI {
   }
 
   /// Called to terminate the connection to a card and PCSC Context
+  ///
   /// Must be called after all the work is done to release context in memory
   Future<void> end() async {
     if (ctx != null) {

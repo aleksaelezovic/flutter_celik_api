@@ -2,7 +2,7 @@ name: flutter_celik_api
 description: CelikAPI (Serbian ID Reader) written from scratch. Works on Windows/Linux/MacOS.
 
 # publish_to: "none" # Remove this line if you wish to publish to pub.dev
-version: 1.0.1
+version: 1.0.1+1
 repository: https://github.com/web-ez/flutter_celik_api
 
 environment:
