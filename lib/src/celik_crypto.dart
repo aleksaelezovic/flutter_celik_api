@@ -21,12 +21,12 @@ mixin CelikCrypto on CelikDataAPI {
         );
   }
 
-  Future<void> signData(String password) async {
+  Future<Uint8List> signData(List<int> data, String password) async {
     final docData = await readData(CelikFile.documentFile);
     final id = docData[CelikTag.id]!;
     final xorKey = utf8.encode("ID$id\u0001$password");
     final xorKeyHash = sha1.convert(xorKey).bytes;
-    final xorValue = await readBinaryData(CelikFile.encryptionXOR);
+    final xorFile = await readBinaryData(CelikFile.encryptionXOR);
 
     final encryptedData = await readBinaryData(CelikFile.encryptedPinAndSecret);
     final encryptedPIN = encryptedData.sublist(4, 4 + 8);
@@ -35,23 +35,25 @@ mixin CelikCrypto on CelikDataAPI {
     final pin = _xorDecryptPIN(
       encryptedPIN,
       xorKeyHash,
-      xorValue,
+      xorFile,
     );
     final secretKey = _xorDecryptSecretKey(
       encryptedSecretKey,
       xorKeyHash,
-      xorValue,
+      xorFile,
     );
 
     await verify(pin);
 
     final publicKey = await _getPublicKey();
 
-    _reconstructPrivateKey(
+    final privateKey = _reconstructPrivateKey(
       await _getDecryptedPrivateKeyASN1(secretKey),
       publicKey.modulus,
       publicKey.exponent,
     );
+
+    return privateKey.createSigner(signingAlgorithm).sign(data).data;
   }
 
   Future<RsaPublicKey> _getPublicKey() async {
@@ -80,7 +82,7 @@ mixin CelikCrypto on CelikDataAPI {
   }
 }
 
-void _reconstructPrivateKey(
+RsaPrivateKey _reconstructPrivateKey(
   Uint8List privateKeyASN1,
   BigInt modulus,
   BigInt publicExponent,
@@ -94,11 +96,19 @@ void _reconstructPrivateKey(
   }
   final prime1 = privateKeyParts[0];
   final prime2 = privateKeyParts[1];
-  final primeExponent1 = privateKeyParts[2];
-  final primeExponent2 = privateKeyParts[3];
-  final crtCoeficient = privateKeyParts[4];
+  // final primeExponent1 = privateKeyParts[2];
+  // final primeExponent2 = privateKeyParts[3];
+  // final crtCoeficient = privateKeyParts[4];
 
-  final privateExponent = 0; // WIP! Need to calculate this
+  final fi = (prime1 - BigInt.one) * (prime2 - BigInt.one);
+  final privateExponent = publicExponent.modInverse(fi);
+
+  return RsaPrivateKey(
+    privateExponent: privateExponent,
+    firstPrimeFactor: prime1,
+    secondPrimeFactor: prime2,
+    modulus: modulus,
+  );
 }
 
 List<int> _xorDecryptPIN(
