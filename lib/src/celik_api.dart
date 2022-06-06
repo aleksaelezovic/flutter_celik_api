@@ -34,8 +34,15 @@ abstract class CelikDataAPI {
     APDUResponse initResponse = await celik.init();
     if (!initResponse.isOk()) throw Exception("Init failed.");
 
-    await celik.verifyPIN(pin);
-    if (!initResponse.isOk()) throw Exception("Pin not correct.");
+    APDUResponse verifyResponse = await celik.verifyPIN(pin);
+    if (!verifyResponse.isOk()) {
+      if (verifyResponse.statusCode[0] == 0x63) {
+        final sw2 = verifyResponse.statusCode[1];
+        if (sw2 >= 0xC0 && sw2 <= 0xCF)
+          throw "Pin incorrect. ${sw2 - 0xC0} tries left.";
+      }
+      throw Exception("Pin not correct.");
+    }
   }
 
   /// Read data (structured) from CelikFile
