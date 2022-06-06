@@ -13,8 +13,8 @@ abstract class CelikDataAPI {
   /// Should be overriden with your custom PCSC logic
   CelikAPDUBase createCelikAPDU();
 
-  /// Read data from CelikFile
-  Future<Map<CelikTag, String>> readData(CelikFile file) async {
+  /// Read binary data from CelikFile
+  Future<List<int>> readBinaryData(CelikFile file) async {
     CelikAPDUBase celik = createCelikAPDU();
     APDUResponse initResponse = await celik.init();
     if (!initResponse.isOk()) throw Exception("Init failed.");
@@ -25,7 +25,22 @@ abstract class CelikDataAPI {
     APDUResponse dataResponse = await celik.readFile();
     if (!dataResponse.isOk()) throw Exception("Reading data error!");
 
-    return transformData(dataResponse.data());
+    return dataResponse.data();
+  }
+
+  /// Verify PIN
+  Future<void> verify(List<int> pin) async {
+    CelikAPDUBase celik = createCelikAPDU();
+    APDUResponse initResponse = await celik.init();
+    if (!initResponse.isOk()) throw Exception("Init failed.");
+
+    await celik.verifyPIN(pin);
+    if (!initResponse.isOk()) throw Exception("Pin not correct.");
+  }
+
+  /// Read data (structured) from CelikFile
+  Future<Map<CelikTag, String>> readData(CelikFile file) async {
+    return transformData(await readBinaryData(file));
   }
 
   /// Reads image data

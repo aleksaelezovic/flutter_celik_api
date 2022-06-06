@@ -9,9 +9,13 @@ environment:
   sdk: ">=2.17.0 <3.0.0"
 
 dependencies:
+  aes_crypt_null_safe: ^2.0.2
+  asn1lib: ^1.1.0
+  crypto: ^3.0.2
   flutter:
     sdk: flutter
   flutter_pcsc: ^0.0.4
+  x509: ^0.2.2
 
 dev_dependencies:
   flutter_lints: ^2.0.0
