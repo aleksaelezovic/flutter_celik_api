@@ -1,5 +1,10 @@
 # Change Log
 
+### version: 1.0.1+2
+
+- Better, more descriptive error handling
+- String error messages instead of `Exception`s
+
 ### version: 1.0.1+1
 
 - Minor comments fixes

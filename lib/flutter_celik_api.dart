@@ -5,6 +5,7 @@ import 'package:flutter_pcsc/flutter_pcsc.dart';
 
 import './src/constants.dart';
 import './src/celik_api.dart';
+import './src/util.dart' show transformPCSCError;
 
 export './src/constants.dart' show CelikFile, CelikTag;
 export './src/celik_api.dart' show CelikAPDUBase, CelikDataAPI, CelikAPIAllData;
@@ -15,8 +16,13 @@ class CelikAPDU extends CelikAPDUBase {
   CelikAPDU(this.card) : super();
 
   @override
-  Future<List<int>> transmit(List<int> bytes) =>
-      Pcsc.transmit(card, bytes, newIsolate: true);
+  Future<List<int>> transmit(List<int> bytes) async {
+    try {
+      return await Pcsc.transmit(card, bytes, newIsolate: true);
+    } catch (error) {
+      throw transformPCSCError(error.toString());
+    }
+  }
 }
 
 /// Main user-friendly class.
@@ -40,14 +46,14 @@ class CelikAPI extends CelikDataAPI {
   /// Check if context is initiated - or throw!
   checkInit() {
     if (ctx == null) {
-      throw Exception("No context detected. Please run start()");
+      throw "No context detected. Please run start()";
     }
   }
 
   /// Check if card is present - or throw!
   checkCard() {
     if (card == null) {
-      throw Exception("No card detected! Init a card.");
+      throw "No card detected! Init a card.";
     }
   }
 
@@ -57,8 +63,12 @@ class CelikAPI extends CelikDataAPI {
   Future<void> start() async {
     await end();
 
-    int ctx = await Pcsc.establishContext(PcscSCope.user);
-    this.ctx = ctx;
+    try {
+      int ctx = await Pcsc.establishContext(PcscSCope.user);
+      this.ctx = ctx;
+    } catch (error) {
+      throw transformPCSCError(error.toString());
+    }
   }
 
   /// Get list of all readers
@@ -66,8 +76,11 @@ class CelikAPI extends CelikDataAPI {
   /// * Throws if start() was not called before
   Future<List<String>> getReaders() async {
     checkInit();
-
-    return await Pcsc.listReaders(ctx!);
+    try {
+      return await Pcsc.listReaders(ctx!);
+    } catch (error) {
+      throw transformPCSCError(error.toString());
+    }
   }
 
   /// Connect a card inserted in a specific reader
@@ -76,12 +89,16 @@ class CelikAPI extends CelikDataAPI {
   Future<void> connectCard(String reader) async {
     checkInit();
 
-    card = await Pcsc.cardConnect(
-      ctx!,
-      reader,
-      PcscShare.shared,
-      PcscProtocol.any,
-    );
+    try {
+      card = await Pcsc.cardConnect(
+        ctx!,
+        reader,
+        PcscShare.shared,
+        PcscProtocol.any,
+      );
+    } catch (error) {
+      throw transformPCSCError(error.toString());
+    }
   }
 
   /// Reads data from specified File on card
@@ -121,7 +138,7 @@ class CelikAPI extends CelikDataAPI {
 
       List<String> devices = await getReaders();
       if (devices.isEmpty) {
-        throw Exception("No devices found.");
+        throw "No devices found.";
       } else {
         await connectCard(devices[0]);
         data = await super.readAllData();
@@ -147,21 +164,29 @@ class CelikAPI extends CelikDataAPI {
     checkInit();
     checkCard();
 
-    await Pcsc.cardDisconnect(card!.hCard, PcscDisposition.resetCard);
-    card = null;
+    try {
+      await Pcsc.cardDisconnect(card!.hCard, PcscDisposition.resetCard);
+      card = null;
+    } catch (error) {
+      throw transformPCSCError(error.toString());
+    }
   }
 
   /// Called to terminate the connection to a card and PCSC Context
   ///
   /// Must be called after all the work is done to release context in memory
   Future<void> end() async {
-    if (ctx != null) {
-      if (card != null) {
-        await Pcsc.cardDisconnect(card!.hCard, PcscDisposition.resetCard);
-        card = null;
+    try {
+      if (ctx != null) {
+        if (card != null) {
+          await Pcsc.cardDisconnect(card!.hCard, PcscDisposition.resetCard);
+          card = null;
+        }
+        await Pcsc.releaseContext(ctx!);
+        ctx = null;
       }
-      await Pcsc.releaseContext(ctx!);
-      ctx = null;
+    } catch (error) {
+      throw transformPCSCError(error.toString());
     }
   }
 }
