@@ -3,6 +3,26 @@ import 'dart:math';
 import 'dart:typed_data';
 import './constants.dart';
 
+Map<int, List<int>> parseTLV(List<int> bytes) {
+  Map<int, List<int>> out = {};
+
+  int i = 0;
+  while (i + 3 < bytes.length) {
+    var indexStart = i;
+    var valueLength = bytes[i + 2];
+    var indexEnd = i + 4 + valueLength;
+
+    if (bytes[i + 1] != 0x06 ||
+        bytes[i + 3] != 0x00 ||
+        indexEnd >= bytes.length) break;
+
+    out[bytes[i]] = bytes.sublist(indexStart, indexEnd);
+    i = indexEnd;
+  }
+
+  return out;
+}
+
 Map<CelikTag, String> transformData(List<int> data) {
   Map<CelikTag, String> transformed = {};
   ByteBuffer buf = Uint8List.fromList(data).buffer;

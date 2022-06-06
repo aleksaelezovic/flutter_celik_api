@@ -22,6 +22,13 @@ class APDUCommands {
         bytesOffset & 0xFF,
         bytesLength
       ];
+
+  static List<int> verify(List<int> pin) => [
+        ...[0x00, 0x20, 0x00, 0x01],
+        0x08,
+        ...pin.sublist(0, 8),
+        0x00
+      ];
 }
 
 class APDUResponse {

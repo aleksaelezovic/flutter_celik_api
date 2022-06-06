@@ -13,10 +13,30 @@ class CelikConstants {
     0x01
   ];
 
-  static const List<int> documentFile = [0x0F, 0x02];
-  static const List<int> personalFile = [0x0F, 0x03];
-  static const List<int> residenceFile = [0x0F, 0x04];
-  static const List<int> photoFile = [0x0F, 0x06];
+  static List<int> getFile(CelikFile f) {
+    switch (f) {
+      case CelikFile.documentFile:
+        return [0x0F, 0x02];
+      case CelikFile.personalFile:
+        return [0x0F, 0x03];
+      case CelikFile.residenceFile:
+        return [0x0F, 0x04];
+      case CelikFile.photoFile:
+        return [0x0F, 0x06];
+      case CelikFile.firstUnknown:
+        return [0x0F, 0xA3];
+      case CelikFile.standardCertificate:
+        return [0x0F, 0x08];
+      case CelikFile.encryptedPrivateKey:
+        return [0x0F, 0x09];
+      case CelikFile.encryptedPinAndSecret:
+        return [0x0F, 0x13];
+      case CelikFile.encryptionXOR:
+        return [0x0F, 0xA1];
+      case CelikFile.qualifiedCertificate:
+        return [0x0F, 0x10];
+    }
+  }
 
   static const Map<CelikTag, String> tags = {
     CelikTag.error: "ERR!",
@@ -42,22 +62,20 @@ class CelikConstants {
   static String tagToString(CelikTag tag) {
     return tags[tag] ?? "-";
   }
-
-  static List<int> getFile(CelikFile f) {
-    switch (f) {
-      case CelikFile.documentFile:
-        return documentFile;
-      case CelikFile.personalFile:
-        return personalFile;
-      case CelikFile.residenceFile:
-        return residenceFile;
-      case CelikFile.photoFile:
-        return photoFile;
-    }
-  }
 }
 
-enum CelikFile { documentFile, personalFile, residenceFile, photoFile }
+enum CelikFile {
+  documentFile,
+  personalFile,
+  residenceFile,
+  photoFile,
+  qualifiedCertificate,
+  standardCertificate,
+  firstUnknown,
+  encryptedPrivateKey,
+  encryptedPinAndSecret,
+  encryptionXOR,
+}
 
 const _tagIndexStart = 1545 - 1; // 1543 = error
 

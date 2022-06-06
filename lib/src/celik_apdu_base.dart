@@ -24,6 +24,9 @@ abstract class CelikAPDUBase {
         return APDUResponse(b);
       });
 
+  Future<APDUResponse> verifyPIN(List<int> pin) =>
+      transmit(APDUCommands.verify(pin)).then((b) => APDUResponse(b));
+
   Future<bool> _setPreciseFileLength() async {
     APDUResponse res = APDUResponse(await transmit(
       APDUCommands.readByteData(2, 2),
