@@ -35,6 +35,8 @@ class CelikConstants {
         return [0x0F, 0xA1];
       case CelikFile.qualifiedCertificate:
         return [0x0F, 0x10];
+      case CelikFile.intermCertificate:
+        return [0x0F, 0x11];
     }
   }
 
@@ -75,6 +77,7 @@ enum CelikFile {
   encryptedPrivateKey,
   encryptedPinAndSecret,
   encryptionXOR,
+  intermCertificate,
 }
 
 const _tagIndexStart = 1545 - 1; // 1543 = error

@@ -12,25 +12,28 @@ import './celik_api.dart';
 final signingAlgorithm = algorithms.signing.rsa.sha256;
 
 mixin CelikCrypto on CelikDataAPI {
-  Future<bool> verifySignature(Uint8List signature, Uint8List data) async {
+  Future<bool> verifySignature(Uint8List signature, List<int> data) async {
     final publicKey = await _getPublicKey();
 
     return publicKey.createVerifier(signingAlgorithm).verify(
-          data,
+          Uint8List.fromList(data),
           Signature(signature),
         );
   }
 
   Future<Uint8List> signData(List<int> data, String password) async {
     final docData = await readData(CelikFile.documentFile);
-    final id = docData[CelikTag.id]!;
+    final id = docData[CelikTag.docRegNo]!;
     final xorKey = utf8.encode("ID$id\u0001$password");
     final xorKeyHash = sha1.convert(xorKey).bytes;
-    final xorFile = await readBinaryData(CelikFile.encryptionXOR);
 
     final encryptedData = await readBinaryData(CelikFile.encryptedPinAndSecret);
     final encryptedPIN = encryptedData.sublist(4, 4 + 8);
     final encryptedSecretKey = encryptedData.sublist(17, 17 + 32);
+
+    print(encryptedData);
+    final xorFile = await readBinaryData(CelikFile.encryptionXOR);
+    print(xorFile);
 
     final pin = _xorDecryptPIN(
       encryptedPIN,
@@ -43,6 +46,7 @@ mixin CelikCrypto on CelikDataAPI {
       xorFile,
     );
 
+    print(pin);
     await verify(pin);
 
     final publicKey = await _getPublicKey();
