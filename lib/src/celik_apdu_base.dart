@@ -20,7 +20,7 @@ abstract class CelikAPDUBase {
 
   Future<APDUResponse> selectFile(CelikFile file) =>
       transmit(APDUCommands.selectFile(CelikConstants.getFile(file))).then((b) {
-        selectedFileLength = b[3]; // Approximation
+        if (b.length > 2) selectedFileLength = b[3]; // Approximation
         return APDUResponse(b);
       });
 
