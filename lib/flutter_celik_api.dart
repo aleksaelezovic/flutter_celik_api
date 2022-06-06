@@ -5,6 +5,7 @@ import 'package:flutter_pcsc/flutter_pcsc.dart';
 
 import './src/constants.dart';
 import './src/celik_api.dart';
+import './src/celik_crypto.dart';
 import './src/util.dart' show transformPCSCError;
 
 export './src/constants.dart' show CelikFile, CelikTag;
@@ -32,7 +33,7 @@ class CelikAPDU extends CelikAPDUBase {
 /// Simple usage: ```
 /// await CelikAPI().readAllData()
 /// ```
-class CelikAPI extends CelikDataAPI {
+class CelikAPI extends CelikDataAPI with CelikCrypto {
   /// flutter_pcsc Context
   int? ctx;
 
