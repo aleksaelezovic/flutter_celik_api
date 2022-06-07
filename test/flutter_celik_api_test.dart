@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter_celik_api/flutter_celik_api.dart';
 import 'package:test/test.dart';
 
@@ -26,7 +24,8 @@ void main() {
       await celik.end();
     });
 
-    test("sign & verify", () async {
+    /*
+    test("- sign & verify", () async {
       if (pin == "")
         throw "No pin specified. Specify with --dart-define=\"pin=[PIN]\" argument.";
 
@@ -41,6 +40,7 @@ void main() {
       );
 
       expect(isOk, isTrue);
-    });
+    }); 
+    */
   });
 }

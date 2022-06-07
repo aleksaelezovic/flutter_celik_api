@@ -31,9 +31,7 @@ mixin CelikCrypto on CelikDataAPI {
     final encryptedPIN = encryptedData.sublist(4, 4 + 8);
     final encryptedSecretKey = encryptedData.sublist(17, 17 + 32);
 
-    print(encryptedData);
     final xorFile = await readBinaryData(CelikFile.encryptionXOR);
-    print(xorFile);
 
     final pin = _xorDecryptPIN(
       encryptedPIN,
@@ -46,7 +44,6 @@ mixin CelikCrypto on CelikDataAPI {
       xorFile,
     );
 
-    print(pin);
     await verify(pin);
 
     final publicKey = await _getPublicKey();
@@ -62,7 +59,7 @@ mixin CelikCrypto on CelikDataAPI {
 
   Future<RsaPublicKey> _getPublicKey() async {
     final standardCertificate =
-        (await readBinaryData(CelikFile.standardCertificate)).sublist(4);
+        (await readBinaryData(CelikFile.authCertificate)).sublist(4);
 
     final pemIterable = parsePem(utf8.decode(standardCertificate));
     return pemIterable.firstWhere((x) => x is RsaPublicKey) as RsaPublicKey;

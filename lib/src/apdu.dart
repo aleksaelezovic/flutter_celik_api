@@ -25,8 +25,8 @@ class APDUCommands {
 
   static List<int> verify(List<int> pin) => [
         ...[0x00, 0x20, 0x00, 0x01],
-        0x08,
-        ...pin.sublist(0, 8),
+        pin.length,
+        ...pin,
         0x00
       ];
 }

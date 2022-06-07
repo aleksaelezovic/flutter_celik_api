@@ -23,20 +23,22 @@ class CelikConstants {
         return [0x0F, 0x04];
       case CelikFile.photoFile:
         return [0x0F, 0x06];
-      case CelikFile.firstUnknown:
-        return [0x0F, 0xA3];
-      case CelikFile.standardCertificate:
+      case CelikFile.authCertificate:
         return [0x0F, 0x08];
+      case CelikFile.qualifiedCertificate:
+        return [0x0F, 0x10];
+      case CelikFile.intermCertificate:
+        return [0x0F, 0x11];
       case CelikFile.encryptedPrivateKey:
         return [0x0F, 0x09];
       case CelikFile.encryptedPinAndSecret:
         return [0x0F, 0x13];
       case CelikFile.encryptionXOR:
         return [0x0F, 0xA1];
-      case CelikFile.qualifiedCertificate:
-        return [0x0F, 0x10];
-      case CelikFile.intermCertificate:
-        return [0x0F, 0x11];
+      case CelikFile.firstUnknown:
+        return [0x0F, 0xA3];
+      case CelikFile.test:
+        return [0x0F, 0x12];
     }
   }
 
@@ -72,12 +74,13 @@ enum CelikFile {
   residenceFile,
   photoFile,
   qualifiedCertificate,
-  standardCertificate,
+  authCertificate,
   firstUnknown,
   encryptedPrivateKey,
   encryptedPinAndSecret,
   encryptionXOR,
   intermCertificate,
+  test
 }
 
 const _tagIndexStart = 1545 - 1; // 1543 = error
